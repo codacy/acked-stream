@@ -2,18 +2,15 @@ package com.timcharper.acked
 
 import akka.event.LoggingAdapter
 import akka.stream.Attributes
-import akka.stream.scaladsl.Keep
 import akka.stream.scaladsl.SubFlow
-import akka.stream.{Graph, Materializer, OverflowStrategy}
-import akka.stream.scaladsl.{Flow, Keep, RunnableGraph, Sink, Source}
+import akka.stream.OverflowStrategy
+import akka.stream.scaladsl.{Flow, Keep}
 import scala.annotation.unchecked.uncheckedVariance
 import scala.collection.immutable
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.duration._
 import scala.inline
-import scala.language.higherKinds
 import scala.language.implicitConversions
-import scala.language.existentials
 
 abstract class AckedFlowOps[+Out, +Mat] extends AnyRef { self =>
   type UnwrappedRepr[+O] <: akka.stream.scaladsl.FlowOps[O, Mat]
@@ -422,7 +419,6 @@ abstract class AckedFlowOps[+Out, +Mat] extends AnyRef { self =>
   def map[T](f: Out ⇒ T): Repr[T] = andThen {
     wrappedRepr.map {
       case (p, d) =>
-        implicit val ec = SameThreadExecutionContext
         (p, propException(p)(f(d)))
     }
   }
@@ -631,7 +627,7 @@ class AckedFlow[-In, +Out, +Mat](
 }
 
 abstract class AckedFlowOpsMat[+Out, +Mat] extends AckedFlowOps[Out, Mat] {
-  import FlowHelpers.{propException, propFutureException}
+  import FlowHelpers.propException
 
   type UnwrappedRepr[+O] <: akka.stream.scaladsl.FlowOpsMat[O, Mat]
   type WrappedRepr[+O] <: akka.stream.scaladsl.FlowOpsMat[AckTup[O], Mat]

@@ -1,8 +1,7 @@
 package com.timcharper.acked
 
-import akka.stream.scaladsl.FlowOps
 import akka.stream.scaladsl.SubFlow
-import language.higherKinds
+
 import scala.annotation.unchecked.uncheckedVariance
 
 trait AckedSubFlow[+Out, +Mat, +F[+_]] extends AckedFlowOps[Out, Mat] {

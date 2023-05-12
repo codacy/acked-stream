@@ -1,11 +1,8 @@
 package com.timcharper.acked
 
 import akka.NotUsed
-import akka.actor._
-import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import akka.stream.ActorMaterializerSettings
-import akka.stream.Materializer
 import akka.stream.Supervision
 import akka.stream.scaladsl.Keep
 import akka.stream.scaladsl.{Sink, Source}
@@ -18,10 +15,9 @@ import scala.util.{Failure, Success, Try}
 
 class AckedSourceSpec extends FunSpec with Matchers with ActorSystemTest {
   describe("AckedSource operations") {
-    def runLeTest[T, U](input: scala.collection.immutable.Iterable[T] =
-                          Range(1, 20))(
+    def runLeTest[T, U](input: scala.collection.immutable.Iterable[T])(
       fn: AckedSource[T, NotUsed] => Future[U]
-    )(implicit materializer: Materializer) = {
+    ) = {
       val withPromise = (Stream.continually(Promise[Unit]) zip input).toList
       val promises = withPromise.map(_._1)
       implicit val ec = ExecutionContext.Implicits.global
@@ -78,7 +74,6 @@ class AckedSourceSpec extends FunSpec with Matchers with ActorSystemTest {
           }.acked.runWith(Sink.fold(0)(_ + _))
         }
         result should be(110)
-        implicit val ec = SameThreadExecutionContext
         assertAcked(completions)
       }
 

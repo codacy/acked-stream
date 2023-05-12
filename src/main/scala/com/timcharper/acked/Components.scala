@@ -151,7 +151,9 @@ object Components {
                     )
                   case Backpressure =>
                     isHoldingUpstream = true
-                }
+                  case unchecked =>
+                    // added to silence warning
+                 }
               } else grabAndPull()
               if (isHoldingDownstream && isAvailable(out) && buffer.nonEmpty) {
                 push(out, dequeue())

@@ -1,12 +1,10 @@
 package com.timcharper.acked
 
 import akka.{Done, NotUsed}
-import akka.pattern.pipe
 import akka.stream.Attributes
-import akka.stream.{Graph, Materializer}
+import akka.stream.Materializer
 import akka.stream.scaladsl.{Keep, RunnableGraph, Source}
 
-import scala.annotation.tailrec
 import scala.annotation.unchecked.uncheckedVariance
 import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions

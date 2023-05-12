@@ -1,7 +1,7 @@
 package com.timcharper.acked
 
 import akka.actor.ActorSystem
-import org.scalatest.{BeforeAndAfterEach, TestData, Suite}
+import org.scalatest.{TestData, Suite}
 import scala.concurrent.{Future, Await}
 import scala.concurrent.duration._
 

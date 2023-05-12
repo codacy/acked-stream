@@ -5,11 +5,10 @@ import org.scalatest.{FunSpec, Matchers}
 import akka.stream.Attributes
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl.Keep
-import akka.stream.scaladsl.Source
 
 import scala.concurrent.Promise
 import scala.collection.mutable._
-import scala.util.{Try, Success, Failure}
+import scala.util.{Try, Success}
 import scala.concurrent.duration._
 
 class ComponentsSpec extends FunSpec with Matchers with ActorSystemTest {
@@ -52,7 +51,7 @@ class ComponentsSpec extends FunSpec with Matchers with ActorSystemTest {
 
         // Every promise should be acknowledged
         for ((p, i) <- data.map(_._1).zipWithIndex) {
-          (p.future.isCompleted, i) shouldBe (true, i)
+          p.future.isCompleted shouldBe true
         }
       }
     }
@@ -79,7 +78,7 @@ class ComponentsSpec extends FunSpec with Matchers with ActorSystemTest {
 
     it("drops new elements when buffer is overrun, failing the promises") {
       new Fixtures {
-        var seen = Stack.empty[Int]
+        val seen = Stack.empty[Int]
         val f = AckedSource(data)
           .via(Components.bundlingBuffer(10, OverflowStrategy.dropHead))
           .runWith(

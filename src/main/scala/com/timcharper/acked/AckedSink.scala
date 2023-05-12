@@ -1,15 +1,12 @@
 package com.timcharper.acked
 
 import akka.Done
-import akka.actor._
 import akka.stream.Attributes
 import akka.stream.Graph
 import akka.stream.SinkShape
-import akka.stream.scaladsl.{Flow, Keep, Sink}
+import akka.stream.scaladsl.Sink
 
-import scala.annotation.unchecked.uncheckedVariance
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
 // Simply a container class which signals "this is safe to use for acknowledgement"
 case class AckedSink[-In, +Mat](akkaSink: Graph[SinkShape[AckTup[In]], Mat]) extends AckedGraph[AckedSinkShape[In], Mat] {

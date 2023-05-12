@@ -1,49 +1,34 @@
 name := "acked-streams"
 
-organization := "com.timcharper"
+organization := "com.codacy"
 
-scalaVersion := "2.13.2"
+scalaVersion := "2.13.10"
 
-crossScalaVersions := Seq("2.12.11", "2.13.2")
-
-val appProperties = {
-  val prop = new java.util.Properties()
-  IO.load(prop, new File("project/version.properties"))
-  prop
-}
+crossScalaVersions := Seq("2.12.17", "2.13.10")
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream"  % "2.5.31",
   "org.scalatest"     %% "scalatest"    % "3.1.1" % "test")
 
-version := appProperties.getProperty("version")
+Compile / scalacOptions ++=
+  (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, x)) if x < 13 => "-language:higherKinds" :: Nil
+    case _ => Nil
+  })
 
 homepage := Some(url("https://github.com/timcharper/acked-stream"))
 
 licenses := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 
-pomExtra := {
-  <scm>
-    <url>https://github.com/timcharper/acked-stream</url>
-    <connection>scm:git:git@github.com:timcharper/acked-stream.git</connection>
-  </scm>
-  <developers>
-    <developer>
-      <id>timcharper</id>
-      <name>Tim Harper</name>
-      <url>http://timcharper.com</url>
-    </developer>
-  </developers>
-}
+scmInfo := Some(
+  ScmInfo(url("https://github.com/codacy/acked-stream"), "scm:git@github.com:codacy/acked-stream.git")
+)
 
-publishMavenStyle := true
+Test / publishArtifact := false
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
+publicMvnPublish
 
-publishArtifact in Test := false
+// this setting is not picked up properly from the plugin
+pgpPassphrase := Option(System.getenv("SONATYPE_GPG_PASSPHRASE")).map(_.toCharArray)
+
+Compile / doc / sources := Seq.empty
